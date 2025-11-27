@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 Mamelonanosy - Orders</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #7f8c8d;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .content {
+            padding: 20px;
+            display: none;
+        }
+        
+        .content.active { display: block; }
+        
+        /* Form Styles */
+        .field {
+            margin-bottom: 15px;
+        }
+        
+        .field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .required { color: #e74c3c; }
+        
+        .field input, .field textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+        
+        .field input:focus, .field textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        
+        .payment-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .payment-toggle button {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-toggle button.active {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .payment-toggle button.non-paye.active {
+            background: #e67e22;
+            border-color: #e67e22;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:active { transform: scale(0.98); }
+        
+        .success, .error {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .error {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        /* Orders List */
+        .date-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .date-selector input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .date-selector button {
+            padding: 10px 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .orders-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .order-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .order-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .order-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .order-status.pending {
+            background: #fff9c4;
+            color: #f39c12;
+        }
+        
+        .order-info {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .order-info div {
+            margin-bottom: 5px;
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn-edit {
+            flex: 1;
+            padding: 8px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .btn-delete {
+            padding: 8px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+        
+        @media (max-width: 600px) {
+            .container { border-radius: 0; }
+            .header h1 { font-size: 24px; }
+            .tabs { font-size: 14px; }
+            .tab { padding: 12px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Mamelonanosy</h1>
+            <p>Gestion des Commandes</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('new')">➕ Nouvelle</button>
+            <button class="tab" onclick="switchTab('list')">📋 Liste</button>
+        </div>
+        
+        <!-- NEW ORDER TAB -->
+        <div id="newTab" class="content active">
+            <form id="orderForm">
+                <div class="field">
+                    <label>📅 Date Livraison <span class="required">*</span></label>
+                    <input type="text" id="date" placeholder="Ex: demain, mardi, 27/11" required>
+                    <div class="hint">Tapez: demain, lundi, ou 27/11/25</div>
+                </div>
+                
+                <div class="field">
+                    <label>👤 Nom Client <span class="required">*</span></label>
+                    <input type="text" id="name" placeholder="Ex: Marie Rasoamalala" required>
+                </div>
+                
+                <div class="field">
+                    <label>📞 Téléphone <span class="required">*</span></label>
+                    <input type="tel" id="phone" placeholder="Ex: 034 12 345 67" required>
+                </div>
+                
+                <div class="field">
+                    <label>📍 Adresse <span class="required">*</span></label>
+                    <input type="text" id="address" placeholder="Ex: Lot 123 Ambohijatovo" required>
+                </div>
+                
+                <div class="field">
+                    <label>📦 Produits <span class="required">*</span></label>
+                    <input type="text" id="products" placeholder="Ex: CA x2, CG x1" required>
+                    <div class="hint">Ex: CA x2, CG x1 ou CA CG TA</div>
+                </div>
+                
+                <div class="field">
+                    <label>💳 Paiement <span class="required">*</span></label>
+                    <div class="payment-toggle">
+                        <button type="button" class="payment-btn non-paye active" data-type="non-paye">💵 NON PAYÉ</button>
+                        <button type="button" class="payment-btn" data-type="paye">💰 PAYÉ</button>
+                    </div>
+                    <input type="hidden" id="payment" value="non-paye">
+                </div>
+                
+                <div class="field">
+                    <label>📝 Notes</label>
+                    <input type="text" id="notes" placeholder="Optionnel">
+                </div>
+                
+                <input type="hidden" id="editingId">
+                <button type="submit" class="btn btn-primary" id="submitBtn">✅ Enregistrer</button>
+                
+                <div class="success" id="successMsg"></div>
+                <div class="error" id="errorMsg"></div>
+            </form>
+        </div>
+        
+        <!-- ORDERS LIST TAB -->
+        <div id="listTab" class="content">
+            <div class="date-selector">
+                <input type="date" id="filterDate">
+                <button onclick="loadOrders()">🔍 Chercher</button>
+                <button onclick="showToday()">📅 Aujourd'hui</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalOrders">0</div>
+                    <div class="stat-label">Commandes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pendingOrders">0</div>
+                    <div class="stat-label">En Attente</div>
+                </div>
+            </div>
+            
+            <div id="ordersList" class="orders-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <div>Sélectionnez une date</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, set, onValue, remove, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvLWQciD4cjx8uJzUjtylEJ7_tbtG7bUk",
+            authDomain: "louanh-52894.firebaseapp.com",
+            databaseURL: "https://louanh-52894-default-rtdb.firebaseio.com",
+            projectId: "louanh-52894",
+            storageBucket: "louanh-52894.firebasestorage.app",
+            messagingSenderId: "362217387370",
+            appId: "1:362217387370:web:7aeff80ae6336e1738a113"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Tab switching - FIXED
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'new') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('newTab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('listTab').classList.add('active');
+                showToday();
+            }
+        };
+
+        // Payment toggle - FIXED
+        document.querySelectorAll('.payment-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('payment').value = btn.dataset.type;
+            });
+        });
+
+        // Form submission - FIXED
+        document.getElementById('orderForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                delivery_date: document.getElementById('date').value.trim(),
+                name: document.getElementById('name').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                products: document.getElementById('products').value.trim(),
+                payment: document.getElementById('payment').value,
+                notes: document.getElementById('notes').value.trim(),
+                status: 'Pending',
+                agent: '',
+                timestamp: new Date().toISOString(),
+                created_at: new Date().toISOString()
+            };
+
+            // Add payment marker to notes
+            if (formData.payment === 'paye') {
+                formData.notes = formData.notes ? `PAYÉ | ${formData.notes}` : 'PAYÉ';
+            } else {
+                formData.notes = formData.notes ? `NON PAYÉ | ${formData.notes}` : 'NON PAYÉ';
+            }
+
+            try {
+                const editingId = document.getElementById('editingId').value;
+                
+                if (editingId) {
+                    await update(ref(db, `orders/${editingId}`), formData);
+                    showSuccess('✅ Commande modifiée!');
+                } else {
+                    await push(ref(db, 'orders'), formData);
+                    showSuccess('✅ Commande enregistrée!');
+                }
+
+                resetForm();
+                
+                // Auto-refresh list if on list tab
+                const listTab = document.getElementById('listTab');
+                if (listTab && listTab.classList.contains('active')) {
+                    loadOrders();
+                }
+            } catch (error) {
+                console.error('Firebase error:', error);
+                showError('❌ Erreur: ' + error.message);
+            }
+        });
+
+        function resetForm() {
+            document.getElementById('orderForm').reset();
+            document.getElementById('editingId').value = '';
+            
+            // Safely reset payment buttons
+            const payeBtns = document.querySelectorAll('.payment-btn');
+            payeBtns.forEach(b => b.classList.remove('active'));
+            
+            const nonPayeBtn = document.querySelector('.payment-btn.non-paye');
+            if (nonPayeBtn) {
+                nonPayeBtn.classList.add('active');
+            }
+            
+            document.getElementById('payment').value = 'non-paye';
+            document.getElementById('submitBtn').textContent = '✅ Enregistrer';
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            if (el) {
+                el.textContent = msg;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 3000);
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            if (el) {
+                el.textContent = msg;
+                el.style.display = 'block';
+                setTimeout(() => el.style.display = 'none', 5000);
+            }
+        }
+
+        // Load orders for date - FIXED
+        window.loadOrders = function() {
+            const dateInput = document.getElementById('filterDate').value;
+            if (!dateInput) {
+                alert('Sélectionnez une date');
+                return;
+            }
+
+            const ordersRef = ref(db, 'orders');
+            
+            onValue(ordersRef, (snapshot) => {
+                const orders = [];
+                snapshot.forEach(child => {
+                    const order = child.val();
+                    order.id = child.key;
+                    
+                    // Match by delivery_date (flexible matching)
+                    const deliveryDate = order.delivery_date || '';
+                    const searchDate = dateInput.split('-').reverse().join('/'); // Convert 2025-11-27 to 27/11/2025
+                    
+                    if (deliveryDate.includes(searchDate) || 
+                        deliveryDate.includes(dateInput.split('-')[2] + '/' + dateInput.split('-')[1])) {
+                        orders.push(order);
+                    }
+                });
+
+                displayOrders(orders);
+            }, { onlyOnce: true });
+        };
+
+        window.showToday = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterDate').value = today;
+            loadOrders();
+        };
+
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersList');
+            
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>Aucune commande ce jour</div>
+                    </div>
+                `;
+                document.getElementById('totalOrders').textContent = '0';
+                document.getElementById('pendingOrders').textContent = '0';
+                return;
+            }
+
+            const pending = orders.filter(o => o.status === 'Pending').length;
+            document.getElementById('totalOrders').textContent = orders.length;
+            document.getElementById('pendingOrders').textContent = pending;
+
+            container.innerHTML = orders.map(order => {
+                const safeId = order.id.replace(/'/g, "\\'");
+                const safeName = (order.name || 'Unknown').replace(/'/g, "\\'");
+                
+                return `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-name">${order.name || 'Unknown'}</div>
+                            <div class="order-status ${(order.status || 'pending').toLowerCase()}">${order.status || 'Pending'}</div>
+                        </div>
+                        <div class="order-info">
+                            <div>📞 ${order.phone || 'N/A'}</div>
+                            <div>📍 ${order.address || 'N/A'}</div>
+                            <div>📦 ${order.products || 'N/A'}</div>
+                            ${order.notes ? `<div>📝 ${order.notes}</div>` : ''}
+                            ${order.agent ? `<div>👤 ${order.agent}</div>` : ''}
+                        </div>
+                        <div class="order-actions">
+                            <button class="btn-edit" onclick="editOrder('${safeId}')">✏️ Modifier</button>
+                            <button class="btn-delete" onclick="deleteOrder('${safeId}', '${safeName}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Edit order - FIXED
+        window.editOrder = function(id) {
+            const orderRef = ref(db, `orders/${id}`);
+            
+            onValue(orderRef, (snapshot) => {
+                const order = snapshot.val();
+                
+                if (!order) {
+                    showError('❌ Commande introuvable');
+                    return;
+                }
+                
+                document.getElementById('date').value = order.delivery_date || '';
+                document.getElementById('name').value = order.name || '';
+                document.getElementById('phone').value = order.phone || '';
+                document.getElementById('address').value = order.address || '';
+                document.getElementById('products').value = order.products || '';
+                
+                // Extract original notes (remove payment marker)
+                let notes = order.notes || '';
+                notes = notes.replace(/^(PAYÉ|NON PAYÉ) \| /, '');
+                document.getElementById('notes').value = notes;
+                
+                // Set payment type
+                const paymentType = order.payment || 'non-paye';
+                document.getElementById('payment').value = paymentType;
+                
+                document.querySelectorAll('.payment-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.type === paymentType) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                document.getElementById('editingId').value = id;
+                document.getElementById('submitBtn').textContent = '💾 Modifier';
+                
+                switchTab('new');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, { onlyOnce: true });
+        };
+
+        // Delete order - FIXED
+        window.deleteOrder = async function(id, name) {
+            if (!confirm(`Supprimer la commande de ${name}?`)) return;
+            
+            try {
+                await remove(ref(db, `orders/${id}`));
+                showSuccess('✅ Commande supprimée');
+                
+                // Refresh list
+                setTimeout(() => loadOrders(), 500);
+            } catch (error) {
+                console.error('Delete error:', error);
+                showError('❌ Erreur: ' + error.message);
+            }
+        };
+
+        // Initialize
+        console.log('✅ Firebase initialized');
+    </script>
+</body>
+</html>

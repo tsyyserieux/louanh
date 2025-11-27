@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mamelonanosy - Orders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .info-item span {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .logo {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📦</div>
+        <h1>Mamelonanosy</h1>
+        <p>Système de Gestion des Commandes</p>
+
+        <a href="orders.html" class="btn">🚀 Accéder aux Commandes</a>
+
+        <div class="info">
+            <div class="info-item">
+                <span>✅</span>
+                <div>Ajoutez des commandes depuis votre téléphone</div>
+            </div>
+            <div class="info-item">
+                <span>🔄</span>
+                <div>Synchronisation automatique en temps réel</div>
+            </div>
+            <div class="info-item">
+                <span>📱</span>
+                <div>Accessible partout, tout le temps</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
